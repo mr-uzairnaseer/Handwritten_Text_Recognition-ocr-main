@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+
 import Sidebar from './components/Sidebar';
 import ImageViewer from './components/ImageViewer';
 import TextEditor from './components/TextEditor';
@@ -86,20 +86,30 @@ function App() {
 
     setLoading(true);
     setError('');
-    const formData = new FormData();
-    formData.append('image', file);
 
     try {
-      const response = await axios.post('http://localhost:5001/api/ocr', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const text = response.data.text;
+      // Dynamic import to avoid SSR issues if we were using Next.js, but fine for Vite
+      const Tesseract = (await import('tesseract.js')).default;
+
+      const { data } = await Tesseract.recognize(
+        file,
+        'eng',
+        {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              // You could add a progress state here if you wanted
+            }
+          }
+        }
+      );
+
+      const text = data.text;
       setResult(text);
-      setRawData(response.data); // Assuming server returns more data, or we just store the whole object
-      addToHistory(text, response.data);
+      setRawData(data);
+      addToHistory(text, data);
     } catch (err) {
       console.error(err);
-      setError('Processing failed. Please check connection.');
+      setError('Processing failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -108,19 +118,26 @@ function App() {
   const exportPDF = async () => {
     if (!result) return;
     try {
-      const response = await axios.post('http://localhost:5001/api/export-pdf',
-        { text: result },
-        { responseType: 'blob' }
-      );
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `ocr - result - ${Date.now()}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+
+      const splitText = doc.splitTextToSize(result, 180);
+      let y = 10;
+
+      // Simple pagination loop
+      for (let i = 0; i < splitText.length; i++) {
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+        doc.text(splitText[i], 10, y);
+        y += 7; // line height
+      }
+
+      doc.save(`ocr-result-${Date.now()}.pdf`);
     } catch (err) {
-      console.error(err);
+      console.error("PDF Export Error", err);
+      setError("Failed to export PDF");
     }
   };
 
@@ -195,7 +212,7 @@ function App() {
         <footer className="h-6 bg-blue-600/10 border-t border-blue-900/30 flex items-center justify-between px-4 text-[10px] text-zinc-400 select-none shrink-0">
           <div className="flex items-center gap-4">
             <span>MEM: {history.length} items</span>
-            <span>ENG: Tesseract.js (WASM)</span>
+            <span>ENG: Tesseract.js (Client-Side)</span>
           </div>
           <div className="flex items-center gap-4">
             <span className={error ? "text-red-400 font-bold" : "text-zinc-500"}>{error || "System Standard"}</span>
