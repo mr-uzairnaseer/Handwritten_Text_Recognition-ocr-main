@@ -7,9 +7,9 @@ export default function Sidebar({ activeTab, history, onLoadHistory, onClearHist
     return (
         <div className="flex h-screen z-20 shrink-0">
             {/* Side Drawer (Content) */}
-            <div className="w-64 bg-[#111113] border-r border-zinc-800 h-full flex flex-col transition-all">
-                <div className="p-4 border-b border-zinc-800">
-                    <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+            <div className="w-64 bg-white dark:bg-[#111113] border-r border-zinc-200 dark:border-zinc-800 h-full flex flex-col transition-all duration-300">
+                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+                    <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                         {activeTab === 'files' && <><Clock size={14} /> Recent Files</>}
                         {activeTab === 'search' && <><Search size={14} /> Search</>}
                         {activeTab === 'settings' && <><Settings size={14} /> Settings</>}
@@ -28,23 +28,23 @@ export default function Sidebar({ activeTab, history, onLoadHistory, onClearHist
                                     <div
                                         key={item.id}
                                         onClick={() => onLoadHistory(item)}
-                                        className="p-3 border-b border-zinc-800/50 hover:bg-zinc-800/50 cursor-pointer group transition-colors"
+                                        className="p-3 border-b border-zinc-200 dark:border-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 cursor-pointer group transition-colors"
                                     >
                                         <div className="flex items-center gap-3">
                                             {item.preview ? (
                                                 <img src={item.preview} className="w-8 h-8 rounded object-cover" alt="thumb" />
                                             ) : (
-                                                <div className="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center text-zinc-600 text-[10px]">TXT</div>
+                                                <div className="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-600 text-[10px]">TXT</div>
                                             )}
                                             <div className="overflow-hidden">
-                                                <h3 className="text-sm font-medium text-zinc-300 truncate w-32 group-hover:text-white transition-colors">
+                                                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate w-32 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                                                     {item.text.substring(0, 15) || "Untitled"}...
                                                 </h3>
                                                 <p className="text-[10px] text-zinc-600">
                                                     {new Date(item.timestamp).toLocaleTimeString()}
                                                 </p>
                                             </div>
-                                            <ChevronRight size={14} className="ml-auto text-zinc-700 group-hover:text-zinc-500 opacity-0 group-hover:opacity-100 transition-all" />
+                                            <ChevronRight size={14} className="ml-auto text-zinc-400 dark:text-zinc-700 group-hover:text-zinc-500 opacity-0 group-hover:opacity-100 transition-all" />
                                         </div>
                                     </div>
                                 ))
@@ -67,10 +67,10 @@ export default function Sidebar({ activeTab, history, onLoadHistory, onClearHist
                 </div>
 
                 {activeTab === 'files' && history.length > 0 && (
-                    <div className="p-3 border-t border-zinc-800 mt-auto">
+                    <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
                         <button
                             onClick={onClearHistory}
-                            className="flex items-center justify-center gap-2 w-full py-2 rounded bg-red-900/10 hover:bg-red-900/20 text-red-500 text-xs font-medium transition-colors"
+                            className="flex items-center justify-center gap-2 w-full py-2 rounded bg-red-100 dark:bg-red-900/10 hover:bg-red-200 dark:hover:bg-red-900/20 text-red-600 dark:text-red-500 text-xs font-medium transition-colors"
                         >
                             <Trash2 size={12} /> Clear History
                         </button>

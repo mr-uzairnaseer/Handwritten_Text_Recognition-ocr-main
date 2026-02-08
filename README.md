@@ -5,7 +5,6 @@
 A modern, privacy-focused workspace for recognizing handwritten text directly in your browser. No server required.
 
 ![Project Preview](./Screenshot%20.png)
-*(Note: Replace with actual screenshot if available, or remove)*
 
 ## ✨ Features
 

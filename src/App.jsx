@@ -4,9 +4,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ImageViewer from './components/ImageViewer';
 import TextEditor from './components/TextEditor';
-import { Upload, Play, Loader2, PanelLeftClose } from 'lucide-react';
+import { Upload, Play, Loader2, PanelLeftClose, Sun, Moon } from 'lucide-react';
+import { useTheme } from './context/ThemeContext';
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState('');
@@ -142,7 +144,7 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-zinc-950 text-zinc-200 overflow-hidden font-sans">
+    <div className="flex h-screen w-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 overflow-hidden font-sans transition-colors duration-300">
       <Sidebar
         activeTab={activeSidebar}
         onTabChange={setActiveSidebar}
@@ -154,21 +156,30 @@ function App() {
 
       <div className="flex flex-col flex-grow h-full overflow-hidden transition-all duration-300">
         {/* Command Bar */}
-        <header className="h-14 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between px-6 shrink-0 z-10">
+        <header className="h-14 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between px-6 shrink-0 z-10 transition-colors duration-300">
           <div className="flex items-center gap-4">
             <button onClick={() => setShowSidebar(!showSidebar)} className="text-zinc-500 hover:text-zinc-300 transition-colors">
               <PanelLeftClose size={20} className={`transform transition - transform ${!showSidebar ? 'rotate-180' : ''} `} />
             </button>
-            <div className="h-4 w-px bg-zinc-800" />
-            <h1 className="text-sm font-medium tracking-wide text-zinc-100">HTR WORKSPACE <span className="text-zinc-500 ml-2">v2.1.0</span></h1>
+            <div className="h-4 w-px bg-zinc-300 dark:bg-zinc-800" />
+            <h1 className="text-sm font-medium tracking-wide text-zinc-900 dark:text-zinc-100">HTR WORKSPACE <span className="text-zinc-500 ml-2">v2.1.0</span></h1>
           </div>
 
           <div className="flex items-center gap-3">
-            {loading && <span className="text-xs text-blue-400 animate-pulse flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Processing...</span>}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <div className="h-4 w-px bg-zinc-300 dark:bg-zinc-800 mx-1" />
+
+            {loading && <span className="text-xs text-blue-600 dark:text-blue-400 animate-pulse flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Processing...</span>}
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 transition-colors border border-zinc-700"
+              className="flex items-center gap-2 px-4 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-600 dark:text-zinc-300 transition-colors border border-zinc-200 dark:border-zinc-700"
             >
               <Upload size={14} />
               <span>Import Image</span>
@@ -188,7 +199,7 @@ function App() {
         {/* Workspace Split View */}
         <main className="flex-grow flex overflow-hidden relative">
           {/* Left: Image Viewer */}
-          <div className="flex-1 border-r border-zinc-800 relative min-w-[300px] flex flex-col bg-zinc-900/30">
+          <div className="flex-1 border-r border-zinc-200 dark:border-zinc-800 relative min-w-[300px] flex flex-col bg-zinc-50/50 dark:bg-zinc-900/30 transition-colors duration-300">
             <ImageViewer
               preview={preview}
               onUploadClick={() => fileInputRef.current?.click()}
@@ -203,13 +214,13 @@ function App() {
           </div>
 
           {/* Right: Text Editor */}
-          <div className="flex-1 min-w-[300px] flex flex-col bg-[#1e1e1e]">
+          <div className="flex-1 min-w-[300px] flex flex-col bg-white dark:bg-[#1e1e1e] transition-colors duration-300">
             <TextEditor content={result} rawData={rawData} onExport={exportPDF} />
           </div>
         </main>
 
         {/* Footer Status Bar */}
-        <footer className="h-6 bg-blue-600/10 border-t border-blue-900/30 flex items-center justify-between px-4 text-[10px] text-zinc-400 select-none shrink-0">
+        <footer className="h-6 bg-blue-600/5 dark:bg-blue-600/10 border-t border-blue-200 dark:border-blue-900/30 flex items-center justify-between px-4 text-[10px] text-zinc-500 dark:text-zinc-400 select-none shrink-0 transition-colors duration-300">
           <div className="flex items-center gap-4">
             <span>MEM: {history.length} items</span>
             <span>ENG: Tesseract.js (Client-Side)</span>
